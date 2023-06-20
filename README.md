@@ -209,5 +209,12 @@ unzip sonarqube-9.9.0.65466.zip
     ```
   * once we commit in the github it should trigger the build in the jenkins.
   * and now again go back to the jenkins pipeline-->configure-->add build step-->remove the Remote shell-->and select execute shell-->here pass the command-->scp -r ./* ubuntu@IP of the docker server:~/website/-->click on save. and click on build now.
-   
+  * now again go the jenkins pipleline-->configure-->add build step-->add Remote shell-->in that pass the commands-->
+  ```bash
+  cd /home/ubuntu/website 
+  docker build -t mywebsite .
+  docker run -dit -p 8085:80 --name=settle mywebsite
+  ```
+  * and save it --> build it now.
+  * and in the instance settings in the security groups add port 8085, and save.
   
