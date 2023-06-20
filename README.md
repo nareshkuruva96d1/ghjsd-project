@@ -147,20 +147,67 @@ unzip sonarqube-9.9.0.65466.zip
      1. Update the apt package index and install packages to allow apt to use a repository over HTTPS:
      sudo apt-get update
      sudo apt-get install ca-certificates curl gnupg
-     
+     ```
+     ```bash
      2. Add Docker’s official GPG key:
      sudo install -m 0755 -d /etc/apt/keyrings
      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
      sudo chmod a+r /etc/apt/keyrings/docker.gpg
+     ```
+     ```bash
      3. Use the following command to set up the repository:
       echo \
         "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
         "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
         sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      ```
+     ```bash
      4. Update the apt package index:
          sudo apt-get update
-     
+     ```
+     ```bash
      5.Install Docker Engine, containerd, and Docker Compose.
          * To install the latest version, run:
          sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-      ```
+     ```
+## Docker intigration with the jenkins:
+* now we have to do two things in the both of the servers
+* 1st goto the jenkins server and switch to the jenkins user, when ever install jekins it creates a user named jenkins.
+* now ssh the other docker server from here verify if we can using
+  ```bash
+  ssh ubuntu@Ipaddress
+  ```
+* if we are not able to ssh then we have to goto the docker server and in that edit the sshd_config file in the /etc/ssh/ directory.
+* in that file we have to un cooment the publicauthentication yes and change the passwordauthentication no to yes, and save it.
+* now restart sshd using
+  ```bash
+  systemctl restart sshd
+  ```
+* now again goto the jenkins server and verify it again then it will ask for the password, so we have to set password for the ubuntu user.
+* so goto the docker server create password for the ubuntu user using
+  ```bash
+  passwd username
+  ```
+  * now create the password.
+  * now in jenkins server we can easyly ssh using password.
+  * now we need to activate the password less authentication. for that in the jenkins server we have to generate the keys.
+  * and the using the follwing command can copy the keys into the docker server.
+    ```bash
+    ssh-copy-id ubuntu@IP address
+    ```
+    * now it will ask for the password.
+    * once it is done, we can easyly ssh into the docker, jenkins without password.
+  ## Docker configurations in the Jenkins:
+  * jenkins goto the manage jenkins-->configure system-->goto the server group center-->server group list-->add-->give groupname:Docker-->port:22-->username:ubuntu-->password:xxxxx-->click on save.
+  * again go back to the manage jenkins-->configure systems-->goto the servers list-->add-->select the server group-->servername:docker-1-->serverIP:docker serverIP-->save it
+  * now just go back to the pipeline-->configure-->add build step-->Remote shell-->select the target server-->in shell run touch test.txt
+  * now verify the pipeline by clicking build now.
+  * now goto the repository and create one Dockerfile.
+    ```bash
+    FROM nginx
+    copy . /usr/share/nginx/html
+    ```
+  * once we commit in the github it should trigger the build in the jenkins.
+  * and now again go back to the jenkins pipeline-->configure-->add build step-->remove the Remote shell-->and select execute shell-->here pass the command-->scp -r ./* ubuntu@IP of the docker server:~/website/-->click on save. and click on build now.
+   
+  
