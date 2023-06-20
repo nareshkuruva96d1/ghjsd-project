@@ -77,7 +77,7 @@
 ## prerequiste for SonarQube installations:
 * java needs to installed in the machine and that to it should be 11 or more than that.
 * machine should be of min t2.medium.
-# in the follow the steps:
+# in machine follow the steps:
 * once login to the machine update the machine using
 * ``` bash
   sudo apt update
@@ -128,6 +128,39 @@ unzip sonarqube-9.9.0.65466.zip
 * now install anther plugin manage jenkins-->plugins-->available plugins-->search for SSH2 Easy-->select the plugin and click on the install without restart.
 * now we have to go to the global tool configuration here scrolle down we can see sonarqube scanner-->click on add sonarqube scanner-->give any name-->check the install automatically-->and then click on save.
 * now goto the configure system scrolle down we can see sonarqube servers-->click on add sonarqube-->give any name-->and we have to copy paste the url of the sonarqube server-->and save it.
-* 
-*  
-* 
+* now we have to goto the pipeline what we have created-->and goto the configure-->goto the build step-->select execute the sonarqube scanner--> in the Analysis properties paste the projectkey that we have pasted in the note pad-->and save it.
+*  again go back to the manage jenkins-->configure system-->sonarqube servers-->click on add and select jenkins-->in the pop-up -->kind - secret text-->in secret we have to paste the token that we have copied into the notepad-->and give any ID-->add and in next page select the token and click on save.
+* now move back to pipeline, check if we need to add anything or not. if not just verify the pipeline by clicking the build now.
+* if the build is successful we can check the code scans in sonarqube. in the Sonarqube if the code is gets passed then we have to deploy that into the Docker.
+
+# 5. set-up the Docker server and integrate it with the jenkins pipeline:
+## in machine follow the steps:
+* once login to the machine update the machine using
+* ``` bash
+  sudo apt update
+  and then install the openjdk-17 using
+  sudo apt install openjdk-17-jre -y 
+  ```
+  * goto the Docker website-->install-->ubuntu-->goto set up the repository
+  * and follw the steps:
+     ```bash
+     1. Update the apt package index and install packages to allow apt to use a repository over HTTPS:
+     sudo apt-get update
+     sudo apt-get install ca-certificates curl gnupg
+     
+     2. Add Docker’s official GPG key:
+     sudo install -m 0755 -d /etc/apt/keyrings
+     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+     sudo chmod a+r /etc/apt/keyrings/docker.gpg
+     3. Use the following command to set up the repository:
+      echo \
+        "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+     4. Update the apt package index:
+         sudo apt-get update
+     
+     5.Install Docker Engine, containerd, and Docker Compose.
+         * To install the latest version, run:
+         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      ```
